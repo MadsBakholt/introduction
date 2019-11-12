@@ -27,10 +27,10 @@ Create a sqlite file:
 touch database/database.sqlite
 ```
 
-Run migrations:
+Run migrations and seed database:
 
 ```
-php artisan migrate
+php artisan migrate --seed
 ```
 
 
