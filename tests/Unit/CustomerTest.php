@@ -18,6 +18,11 @@ class CustomerTest extends TestCase
      */
     private $customer;
 
+    /*
+     * @var Delivery[]
+     */
+    private $deliveries;
+
     public function setUp()
     {
         parent::setUp();
@@ -30,12 +35,12 @@ class CustomerTest extends TestCase
             ])->id,
         ]);
 
-        factory(Delivery::class)->create([
+        $this->deliveries[] = factory(Delivery::class)->create([
             'delivered_at' => Carbon::now()->subDays(3),
             'count' => 5,
             'customer_id' => $this->customer->id,
         ]);
-        factory(Delivery::class)->create([
+        $this->deliveries[] = factory(Delivery::class)->create([
             'delivered_at' => Carbon::now()->subDays(8),
             'count' => 2,
             'customer_id' => $this->customer->id,
@@ -47,9 +52,23 @@ class CustomerTest extends TestCase
         $this->customer->agreement->type = Agreement::TYPE_WEEKLY;
 
         // TODO: Implement test for create weekly invoice
-        $invoice = null; /* @var $invoice Invoice */
+        $deliveriesCount = array_reduce($this->deliveries, function($carry, $delivery)
+        {
+            if ($delivery->delivered_at >= Carbon::now()->subWeek()){
+                return $carry + $delivery->count;
+            }else{
+                return $carry;
+            }
+        });
 
-        $this->assertEquals(60,$invoice->amount);
+        $invoice = factory(Invoice::class)->create([
+            'agreement_id' => $this->customer->agreement_id,
+            'invoice_no' => 1,
+            'invoice_due_at' => Carbon::now()->addWeek(),
+            'amount' => $deliveriesCount * $this->customer->agreement->unit_price,
+        ]);
+
+        $this->assertEquals(60, $invoice->amount);
     }
 
     public function testCreateMonthlyInvoice()
@@ -57,8 +76,22 @@ class CustomerTest extends TestCase
         $this->customer->agreement->type = Agreement::TYPE_MONTHLY;
 
         // TODO: Implement test for create monthly invoice
-        $invoice = null; /* @var $invoice Invoice */
+        $deliveriesCount = array_reduce($this->deliveries, function($carry, $delivery)
+        {
+            if ($delivery->delivered_at >= Carbon::now()->subMonth()){
+                return $carry + $delivery->count;
+            }else{
+                return $carry;
+            }
+        });
 
-        $this->assertEquals(84,$invoice->amount);
+        $invoice = factory(Invoice::class)->create([
+            'agreement_id' => $this->customer->agreement_id,
+            'invoice_no' => 1,
+            'invoice_due_at' => Carbon::now()->addWeek(),
+            'amount' => $deliveriesCount * $this->customer->agreement->unit_price,
+        ]);
+
+        $this->assertEquals(84, $invoice->amount);
     }
 }
