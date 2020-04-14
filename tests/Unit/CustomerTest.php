@@ -47,11 +47,12 @@ class CustomerTest extends TestCase
         ]);
     }
 
+    // TODO: Refactor the two functions below into one method
+    //       and to be called by the functions in subject...
     public function testCreateWeeklyInvoice()
     {
         $this->customer->agreement->type = Agreement::TYPE_WEEKLY;
 
-        // TODO: Implement test for create weekly invoice
         $deliveriesCount = array_reduce($this->deliveries, function($carry, $delivery)
         {
             if ($delivery->delivered_at >= Carbon::now()->subWeek()){
@@ -75,7 +76,6 @@ class CustomerTest extends TestCase
     {
         $this->customer->agreement->type = Agreement::TYPE_MONTHLY;
 
-        // TODO: Implement test for create monthly invoice
         $deliveriesCount = array_reduce($this->deliveries, function($carry, $delivery)
         {
             if ($delivery->delivered_at >= Carbon::now()->subMonth()){
