@@ -1,5 +1,6 @@
 @extends('layout')
-<?php /** @var $invoices \App\Invoice[]  */ ?>
+<?php /** @var $invoices \App\Invoice[] */ ?>
+<?php /** @var $customers \App\Customer[] */ ?>
 @section('content')
     <h2>Invoices</h2>
     <div class="table-responsive">
@@ -13,12 +14,12 @@
             </tr>
             </thead>
             <tbody>
-            @foreach($invoices as $invoice)
+            @foreach ($invoices as $invoice)
             <tr>
                 <td>{{ $invoice->invoice_no}}</td>
                 <td>{{ $invoice->invoice_due_at }}</td>
                 <td>{{ $invoice->amount}}</td>
-                <td> {{-- TODO: insert name of customer and link to customer --}}</td>
+                <td>{{ $customers[$invoice->invoice_no]->name }}</td>
             </tr>
             @endforeach
             </tbody>
