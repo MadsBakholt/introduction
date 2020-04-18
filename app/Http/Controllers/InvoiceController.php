@@ -14,6 +14,8 @@ class InvoiceController
         $customers = [];
         $invoices = Invoice::all();
 
+        // TODO: MadsBakholt
+        // Refactor the $customers array into a Invoices view centric DTO instead...
         foreach ($invoices as $invoice){
             $agreement = Agreement::find($invoice->agreement_id);
             $customer = Customer::whereAgreement_id($agreement->id)->firstOrFail();

@@ -47,8 +47,8 @@ class CustomerTest extends TestCase
         ]);
     }
 
-    // TODO: Refactor the two functions below into one method
-    //       and to be called by the functions in subject...
+    // TODO: MadsBakholt
+    // Refactor the core code of the two functions below to call one common method...
     public function testCreateWeeklyInvoice()
     {
         $this->customer->agreement->type = Agreement::TYPE_WEEKLY;
