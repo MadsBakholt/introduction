@@ -36,6 +36,7 @@ class CustomerController extends Controller
         
         $cutOffDate = $agreement->type === Agreement::TYPE_WEEKLY ? Carbon::now()->subWeek() : Carbon::now()->subMonth();
 
+        // Sum all deliveries matching cutoff date criteria...
         $deliveriesCount = 0;
         foreach ($deliveries as $delivery){
             if (Carbon::parse($delivery->delivered_at)->gte($cutOffDate)){
@@ -43,9 +44,15 @@ class CustomerController extends Controller
             }
         }
 
+        // Calculate legal invoice sequence number from database lookups...
         $previousInvoice = Invoice::latest('invoice_no')->first();
         $invoiceNo = $previousInvoice == NULL ? 1 : $previousInvoice->invoice_no + 1;
 
+        // TODO: MadsBakholt
+        // Should probably prevent invoicing action if previous (last) invoice has already
+        // been executed within period per agreement, ie.:
+        // if last invoice 'created_at' is '=> now() - week/month' then skip current invoice
+        // creation - followed up by a proper message.
         $invoice = factory(Invoice::class)->create([
             'agreement_id' => $customer->agreement_id,
             'invoice_no' => $invoiceNo,
